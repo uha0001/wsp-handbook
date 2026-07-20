@@ -1,0 +1,247 @@
+# Example: A Simple RNA-seq Workflow
+
+This example demonstrates a typical RNA-seq workflow on WSP. It is intended to illustrate how the concepts introduced throughout this handbook fit together into a complete analysis.
+
+The workflow consists of:
+
+```text
+Download FASTQs
+        │
+Create project
+        │
+Transfer data
+        │
+Run FastQC
+        │
+Run MultiQC
+        │
+Trim reads
+        │
+Align
+        │
+Count reads
+        │
+Results
+```
+
+---
+
+# Step 1: Create a project
+
+Move to your scratch directory and create a new project.
+
+```bash
+cd /scratch/<username>
+
+mkdir rnaseq_example
+cd rnaseq_example
+
+mkdir raw_data processed_data scripts results logs
+```
+
+Your project should now look like:
+
+```text
+rnaseq_example/
+├── raw_data/
+├── processed_data/
+├── results/
+├── scripts/
+└── logs/
+```
+
+---
+
+# Step 2: Obtain sequencing data
+
+If your data is already on your computer, transfer it to the `raw_data` directory.
+
+For example:
+
+```bash
+scp -r reads/ username@141.48.90.77:/scratch/<username>/rnaseq_example/raw_data/
+```
+
+Alternatively, you can download public datasets directly onto WSP.
+
+```bash
+cd raw_data
+
+wget https://example.org/sample_R1.fastq.gz
+wget https://example.org/sample_R2.fastq.gz
+```
+
+Verify that the files are present:
+
+```bash
+ls -lh
+```
+
+Example output:
+
+```text
+sample_R1.fastq.gz
+sample_R2.fastq.gz
+```
+
+---
+
+# Step 3: Create a Conda environment
+
+Create an environment containing the required software.
+
+```bash
+conda create -n rnaseq fastqc multiqc fastp hisat2 samtools subread
+```
+
+Activate the environment:
+
+```bash
+conda activate rnaseq
+```
+
+---
+
+# Step 4: Assess read quality with FastQC
+
+Create an output directory.
+
+```bash
+mkdir results/fastqc
+```
+
+Run FastQC on all FASTQ files.
+
+```bash
+fastqc raw_data/*.fastq.gz \
+    -o results/fastqc
+```
+
+FastQC generates HTML reports for each sample.
+
+---
+
+# Step 5: Summarize reports with MultiQC
+
+```bash
+multiqc results/fastqc \
+    -o results/multiqc
+```
+
+Open the generated HTML report to obtain a summary of sequencing quality across all samples.
+
+---
+
+# Step 6: Trim adapters and low-quality bases
+
+Create an output directory.
+
+```bash
+mkdir processed_data/trimmed
+```
+
+Run fastp.
+
+```bash
+fastp \
+    -i raw_data/sample_R1.fastq.gz \
+    -I raw_data/sample_R2.fastq.gz \
+    -o processed_data/trimmed/sample_R1_trimmed.fastq.gz \
+    -O processed_data/trimmed/sample_R2_trimmed.fastq.gz \
+    -h results/fastp.html \
+    -j results/fastp.json
+```
+
+The trimmed FASTQ files will be used for downstream analysis.
+
+---
+
+# Step 7: Align reads to the reference genome
+
+First build a HISAT2 index (only required once per reference genome).
+
+```bash
+hisat2-build genome.fa genome_index
+```
+
+Align the reads.
+
+```bash
+hisat2 \
+    -x genome_index \
+    -1 processed_data/trimmed/sample_R1_trimmed.fastq.gz \
+    -2 processed_data/trimmed/sample_R2_trimmed.fastq.gz \
+    -S processed_data/sample.sam
+```
+
+Convert the SAM file to a sorted BAM file.
+
+```bash
+samtools view -bS processed_data/sample.sam \
+| samtools sort \
+-o processed_data/sample.sorted.bam
+```
+
+Index the BAM file.
+
+```bash
+samtools index processed_data/sample.sorted.bam
+```
+
+---
+
+# Step 8: Count reads
+
+Count the number of reads assigned to each gene.
+
+```bash
+featureCounts \
+    -a annotation.gtf \
+    -o results/gene_counts.txt \
+    processed_data/sample.sorted.bam
+```
+
+The resulting count matrix can be used for downstream differential expression analysis in R or another statistical environment.
+
+---
+
+# Final project structure
+
+```text
+rnaseq_example/
+├── raw_data/
+│   ├── sample_R1.fastq.gz
+│   └── sample_R2.fastq.gz
+│
+├── processed_data/
+│   ├── trimmed/
+│   ├── sample.sorted.bam
+│   └── sample.sorted.bam.bai
+│
+├── results/
+│   ├── fastqc/
+│   ├── multiqc/
+│   ├── fastp.html
+│   ├── fastp.json
+│   └── gene_counts.txt
+│
+├── scripts/
+└── logs/
+```
+
+---
+
+# Summary
+
+This workflow demonstrates the basic steps of a typical RNA-seq analysis:
+
+1. Organize your project.
+2. Transfer or download sequencing data.
+3. Create a software environment.
+4. Assess read quality with FastQC.
+5. Summarize quality reports with MultiQC.
+6. Trim adapters and low-quality bases.
+7. Align reads to a reference genome.
+8. Count reads for downstream analysis.
+
+Although real analyses often include additional quality control and statistical analyses, these steps form the foundation of many RNA-seq pipelines.
