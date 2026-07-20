@@ -1,0 +1,22 @@
+# Creating a new project
+
+```bash
+mkdir formicitoxin
+cd formicitoxin
+
+mkdir raw_data processed_data scripts results logs metadata
+touch README.md
+```
+
+Project structure:
+
+```text
+formicitoxin/
+├── metadata/
+├── raw_data/
+├── processed_data/
+├── scripts/
+├── logs/
+├── results/
+└── README.md
+```
