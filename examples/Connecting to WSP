@@ -1,0 +1,23 @@
+# Connecting to WSP
+
+```bash
+ssh username@141.48.90.77
+```
+
+Check where you are:
+
+```bash
+pwd
+```
+
+List your files:
+
+```bash
+ls
+```
+
+Move to scratch:
+
+```bash
+cd /scratch/username
+```
