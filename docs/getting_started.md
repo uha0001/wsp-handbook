@@ -1,66 +1,53 @@
 # Getting Started
 
-This guide covers the initial setup required before using WSP.
+This page covers everything you need before you begin working on WSP, from connecting to the server for the first time to organizing your files.
 
-## Prerequisites
+## Before You Begin
 
-Before logging in, you should have:
+To connect to WSP, you will need:
 
 - A WSP username
 - A temporary password
 - Network access
-  - **On campus:** University network (Ethernet or Wi-Fi)
-  - **Off campus:** Direct SSH access may work. If not, connect through the university VPN once your university account is active.
+  - **On campus:** Connect through the university network (Ethernet or Wi-Fi).
+  - **Off campus:** You can usually connect directly via SSH. If that doesn't work, connect to the university VPN first.
 - An SSH client
 
-### Supported SSH Clients
+## Connecting to WSP
 
-#### Windows PowerShell / Windows Terminal (Recommended)
+### Windows (PowerShell or Windows Terminal)
 
-Windows includes an OpenSSH client by default.
+Modern versions of Windows include OpenSSH by default, so no additional software is required.
 
-Connect to WSP using:
-
-```bash
-ssh -X <username>@141.48.90.77
-```
-
-Example:
-
-```bash
-ssh -X Ulku@141.48.90.77
-```
-
-When prompted, enter your password.
-
----
-
-#### MobaXterm
-
-MobaXterm is a graphical SSH client for Windows that provides:
-
-- SSH terminal
-- Built-in SFTP file browser
-- Saved SSH sessions
-- X11 forwarding
-
-It is useful for users who frequently transfer files between their computer and WSP.
-
----
-
-#### Linux / macOS
-
-Open a terminal and connect using:
+Open PowerShell or Windows Terminal and run:
 
 ```bash
 ssh -X <username>@141.48.90.77
 ```
 
----
+For example:
 
-## First Login
+```bash
+ssh -X ulku@141.48.90.77
+```
 
-After logging in, verify that your session is working correctly.
+The first time you connect, you may be asked whether you trust the server. Type `yes` and press Enter. You will then be prompted for your password. Nothing will appear on the screen while you type it, which is normal.
+
+### Windows (MobaXterm)
+
+If you prefer a graphical interface, MobaXterm is a good alternative. It combines an SSH terminal with a built-in file browser, making it convenient for transferring files between your computer and WSP.
+
+### Linux and macOS
+
+Open a terminal and connect using the same command:
+
+```bash
+ssh -X <username>@141.48.90.77
+```
+
+## Your First Login
+
+Once you're connected, it's worth checking that everything is working as expected.
 
 Run:
 
@@ -71,11 +58,11 @@ ls
 date
 ```
 
----
+These commands confirm your username, current working directory, available files, and the system date.
 
 ## Change Your Password
 
-After your first login, change your temporary password.
+If this is your first login, change your temporary password before doing anything else.
 
 ```bash
 passwd
@@ -83,56 +70,52 @@ passwd
 
 Follow the prompts to choose a new password.
 
----
+## Understanding Storage
 
-## File Organization
-
-WSP uses two primary storage locations.
+WSP provides two main storage locations, each intended for different types of files.
 
 ### Home Directory (`$HOME`)
 
-Store:
+Your home directory should contain files you want to keep long-term, such as:
 
-- Scripts
-- Programs
-- Configuration files
-- Important results
-- Small reference datasets
+- scripts
+- software you installed yourself
+- configuration files
+- important results
+- small reference datasets
 
-The home directory is backed up periodically but has limited storage.
+The home directory is backed up regularly, but available storage is limited.
 
-### Scratch Directory (`scratch`)
+### Scratch Storage
 
-Store:
+Scratch is designed for large files and temporary analyses. Typical examples include:
 
-- Raw sequencing data
-- Large datasets
-- Intermediate files
-- Temporary analysis results
+- raw sequencing data
+- intermediate files
+- alignment files
+- temporary analysis outputs
 
-Scratch is intended for high-capacity storage but is **not backed up**.
+Scratch offers much more storage space, but it is **not backed up**. Never store the only copy of important data there.
 
-> **Note:** At the time of writing, there is no standardized project directory structure or naming convention across the lab. Organize your projects consistently within your own workspace.
+> **Note:** There is currently no standard directory structure used across the lab. Choose a consistent organization that works for you and keep related files together.
 
----
+## Good Habits
 
-## Good Practices
+A little organization goes a long way. We recommend:
 
-- Keep scripts and results organized.
-- Use descriptive filenames.
-- Store large files in `scratch`.
-- Store code and important results in `$HOME`.
-- Avoid modifying shared directories unless instructed.
-- Be considerate of shared computing resources.
+- using descriptive file and folder names
+- keeping scripts separate from raw data
+- storing large datasets in scratch
+- keeping code and important results in your home directory
+- avoiding changes to shared directories unless necessary
+- being considerate when using shared computing resources
 
----
+## Where to Go Next
 
-## Next Steps
+Once you've successfully logged in, the next guides to read are:
 
-After your first login:
-
-- Learn the WSP directory structure.
-- Read the Linux Basics guide.
-- Learn how to transfer files.
-- Learn how to use `screen` for long-running jobs.
-- Learn basic resource management (`htop`, `nice`).
+1. Linux Basics
+2. File Organization
+3. File Transfer
+4. Using `screen` for long-running analyses
+5. Resource Management
