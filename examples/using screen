@@ -1,0 +1,9 @@
+screen -S fastqc
+
+fastqc *.fastq.gz
+
+Ctrl+A D
+
+screen -ls
+
+screen -r fastqc
