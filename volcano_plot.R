@@ -1,3 +1,0 @@
-library(EnhancedVolcano)
-
-EnhancedVolcano(results)
