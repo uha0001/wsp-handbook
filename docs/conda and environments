@@ -1,0 +1,232 @@
+# Conda and Software Environments
+
+Many bioinformatics tools have complex dependencies and often require different versions of the same libraries. Installing everything into one location can quickly lead to software conflicts.
+
+Conda solves this problem by allowing you to create isolated **environments**, each containing its own software and dependencies.
+
+For example, one project might require Python 3.10 while another requires Python 3.12. Instead of choosing one or the other, you can create separate environments for each project.
+
+---
+
+# What is an environment?
+
+A Conda environment is an isolated workspace containing its own software and libraries.
+
+For example:
+
+```text
+base
+├── Python 3.12
+├── Conda
+└── Basic utilities
+
+rnaseq
+├── FastQC
+├── fastp
+├── HISAT2
+└── featureCounts
+
+phylogeny
+├── IQ-TREE
+├── MAFFT
+└── trimAl
+```
+
+Each environment is independent, so installing or updating software in one environment will not affect the others.
+
+---
+
+# Check whether Conda is available
+
+Before creating an environment, verify that Conda is installed.
+
+```bash
+conda --version
+```
+
+If Conda is available, you'll see something similar to:
+
+```text
+conda 25.5.1
+```
+
+If the command is not found, refer to the **Installing Software** guide.
+
+---
+
+# Viewing existing environments
+
+To list all available environments:
+
+```bash
+conda env list
+```
+
+or
+
+```bash
+conda info --envs
+```
+
+The currently active environment is marked with an asterisk (`*`).
+
+Example:
+
+```text
+# conda environments:
+
+base        *   /home/username/miniconda3
+rnaseq          /home/username/miniconda3/envs/rnaseq
+```
+
+---
+
+# Creating a new environment
+
+Create a new environment called `rnaseq` containing Python 3.12:
+
+```bash
+conda create -n rnaseq python=3.12
+```
+
+Conda will display the packages to be installed and ask for confirmation.
+
+Type:
+
+```text
+y
+```
+
+to continue.
+
+---
+
+# Activating an environment
+
+Before using software installed in an environment, activate it.
+
+```bash
+conda activate rnaseq
+```
+
+Your terminal prompt will change:
+
+```text
+(rnaseq) username@WSP:~$
+```
+
+This indicates that the environment is active.
+
+---
+
+# Installing software
+
+Once an environment is active, software can be installed into it.
+
+For example:
+
+```bash
+conda install fastqc
+```
+
+or
+
+```bash
+conda install fastp
+```
+
+The software will only be available while the environment is active.
+
+---
+
+# Installing from Bioconda
+
+Many bioinformatics programs are distributed through the **Bioconda** channel.
+
+For example:
+
+```bash
+conda install -c bioconda hisat2
+```
+
+or
+
+```bash
+conda install -c bioconda samtools
+```
+
+Bioconda contains thousands of life science packages and is usually the first place to look for bioinformatics software.
+
+---
+
+# Deactivating an environment
+
+When you're finished working, deactivate the environment:
+
+```bash
+conda deactivate
+```
+
+You'll return to the base environment.
+
+---
+
+# Removing an environment
+
+If you no longer need an environment, it can be removed.
+
+```bash
+conda remove --name rnaseq --all
+```
+
+This deletes the environment and all software installed within it.
+
+---
+
+# Updating software
+
+Update a package:
+
+```bash
+conda update fastqc
+```
+
+Update every package in the active environment:
+
+```bash
+conda update --all
+```
+
+Updating an entire environment should be done with care, as newer package versions may change your results or introduce incompatibilities.
+
+---
+
+# Exporting environments
+
+To make analyses reproducible, export the environment specification:
+
+```bash
+conda env export > environment.yml
+```
+
+Another user can recreate the same environment with:
+
+```bash
+conda env create -f environment.yml
+```
+
+This helps ensure analyses can be reproduced on another computer or at a later date.
+
+---
+
+# Good practices
+
+- Create separate environments for different projects or workflows.
+- Give environments descriptive names such as `rnaseq`, `assembly`, or `phylogeny`.
+- Avoid installing large numbers of unrelated programs into the same environment.
+- Export important environments so they can be recreated later.
+- Record the environment used for published analyses.
+
+> **Tip**
+>
+> If you're unsure which environment you're using, look at your terminal prompt. The active environment is shown in parentheses before your username.
