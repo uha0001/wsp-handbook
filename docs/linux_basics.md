@@ -2,121 +2,111 @@
 
 You do not need to become a Linux expert to use WSP effectively. Most day-to-day work involves navigating directories, organizing files, running software, and inspecting results.
 
-This guide introduces the commands you'll use most often while working on WSP.
+This guide introduces the commands you'll use most often while working on WSP and explains when you are likely to use them.
 
 ---
 
-# Understanding the Linux filesystem
+# Navigating the filesystem
 
-Unlike Windows, Linux organizes files into a single directory tree.
+The Linux filesystem is organized as a single directory tree. When you log into WSP, you begin in your home directory.
 
-When you log into WSP, you begin in your **home directory**.
+### `pwd`
 
-To see your current location, run:
+Prints your current working directory.
 
 ```bash
 pwd
 ```
 
-Typical output:
+Example output:
 
 ```text
-/home/ulku
+/home/username
 ```
 
-This command is useful whenever you're unsure where you are.
+If you ever become unsure where you are, `pwd` is the quickest way to find out.
 
-> **Tip**
->
-> Getting lost in the filesystem happens to everyone. Running `pwd` is the quickest way to orient yourself.
+### `ls`
 
----
-
-# Viewing files and directories
-
-To see the contents of your current directory:
+Lists the contents of your current directory.
 
 ```bash
 ls
 ```
 
-Useful variations include:
+Useful options:
 
 ```bash
 ls -l
 ```
 
-Displays files in a detailed list, including permissions, owner, size, and modification date.
+Shows detailed information including permissions, owner, size, and modification date.
 
 ```bash
 ls -lh
 ```
 
-Shows file sizes in a human-readable format (KB, MB, GB).
+Displays file sizes in a human-readable format.
 
 ```bash
 ls -a
 ```
 
-Displays hidden files, including configuration files beginning with a period (`.`).
+Shows hidden files, including configuration files such as `.bashrc`.
 
-> **Tip**
->
-> Many important configuration files are hidden. If you can't find `.bashrc` or `.profile`, try using `ls -a`.
+### `cd`
 
----
-
-# Moving around the filesystem
-
-Change into another directory:
+Changes your current directory.
 
 ```bash
 cd project
 ```
 
-Move back one directory:
+Useful shortcuts:
 
 ```bash
 cd ..
 ```
 
-Return to your home directory:
+Move to the parent directory.
 
 ```bash
 cd ~
 ```
 
-Go to the previous directory:
+Return to your home directory.
 
 ```bash
 cd -
 ```
 
+Return to the previous directory.
+
 > **Tip**
 >
-> The `Tab` key will automatically complete file and directory names. Instead of typing a long folder name, type the first few letters and press **Tab**.
+> Press **Tab** to auto-complete filenames and directories instead of typing them in full.
 
 ---
 
-# Creating folders
+# Creating and organizing files
 
-Create a new directory:
+### `mkdir`
+
+Creates a new directory.
 
 ```bash
 mkdir project
 ```
 
-Create several directories at once:
+You can also create multiple directories at once.
 
 ```bash
-mkdir scripts data results
+mkdir data scripts results
 ```
 
-A well-organized project is much easier to maintain than one containing hundreds of files in a single folder.
+### `cp`
 
----
-
-# Copying, moving and renaming
+Copies files or directories.
 
 Copy a file:
 
@@ -130,23 +120,27 @@ Copy an entire directory:
 cp -r project destination/
 ```
 
+### `mv`
+
+Moves or renames files.
+
 Rename a file:
 
 ```bash
 mv old_name.txt new_name.txt
 ```
 
-Move a file:
+Move a file into another directory:
 
 ```bash
 mv file.txt results/
 ```
 
-Unlike Windows, Linux uses the same command (`mv`) for both moving and renaming files.
+Linux uses the same command for moving and renaming.
 
----
+### `rm`
 
-# Removing files
+Removes files or directories.
 
 Delete a file:
 
@@ -154,7 +148,7 @@ Delete a file:
 rm file.txt
 ```
 
-Delete a directory and everything inside it:
+Delete an entire directory:
 
 ```bash
 rm -r folder
@@ -162,51 +156,183 @@ rm -r folder
 
 > **Warning**
 >
-> Files deleted with `rm` do not go to a recycle bin. Double-check before pressing Enter.
+> Deleted files do not go to a recycle bin. Double-check before pressing Enter.
 
 ---
 
-# Viewing file contents
+# Viewing files
 
-Display a small text file:
+Most bioinformatics data are plain text files. Linux provides several tools for viewing them.
+
+### `cat`
+
+Displays the entire contents of a file.
 
 ```bash
 cat file.txt
 ```
 
-Read large files one page at a time:
+Useful for short text files such as configuration files or small scripts.
+
+### `less`
+
+Opens a file in a scrollable viewer.
 
 ```bash
 less file.txt
 ```
 
-Exit `less` by pressing **q**.
+Navigate with the arrow keys and press **q** to quit.
+
+This is usually the best choice for large files.
+
+### `head`
+
+Displays the first 10 lines of a file.
+
+```bash
+head reads.fastq
+```
+
+Specify the number of lines:
+
+```bash
+head -20 reads.fastq
+```
+
+Useful for checking file formats or confirming that a download completed correctly.
+
+### `tail`
+
+Displays the last 10 lines of a file.
+
+```bash
+tail logfile.txt
+```
+
+Specify the number of lines:
+
+```bash
+tail -50 logfile.txt
+```
+
+This is particularly useful for checking log files after a program finishes running.
 
 ---
 
-# Searching
+# Finding information
 
-Find files by name:
+### `find`
+
+Searches for files by name.
 
 ```bash
 find . -name "*.fastq.gz"
 ```
 
-Search for text inside a file:
+Searches the current directory and all subdirectories.
+
+### `grep`
+
+Searches for text within files.
 
 ```bash
 grep "gene" annotation.gff
 ```
 
-These commands become especially useful when working with large sequencing projects.
+Useful options:
+
+```bash
+grep -i "gene" annotation.gff
+```
+
+Ignore uppercase and lowercase differences.
+
+```bash
+grep -n "gene" annotation.gff
+```
+
+Display matching line numbers.
+
+### `wc`
+
+Counts lines, words, and characters.
+
+```bash
+wc genes.txt
+```
+
+Count only lines:
+
+```bash
+wc -l genes.txt
+```
+
+This is useful for quickly estimating the number of records in many text files.
+
+### `sort`
+
+Sorts lines alphabetically.
+
+```bash
+sort genes.txt
+```
+
+Sort numerically:
+
+```bash
+sort -n values.txt
+```
+
+Sorting is commonly used before comparing files or removing duplicate entries.
+
+---
+
+# Working with compressed files
+
+Many sequencing datasets are compressed using the `.gz` format. These files can often be viewed without decompressing them.
+
+View the beginning of a compressed file:
+
+```bash
+zcat reads.fastq.gz | head
+```
+
+Read a compressed text file interactively:
+
+```bash
+zless reads.fastq.gz
+```
+
+---
+
+# Monitoring storage
+
+### `du`
+
+Shows how much disk space a directory uses.
+
+```bash
+du -sh project/
+```
+
+### `df`
+
+Shows available disk space.
+
+```bash
+df -h
+```
+
+These commands are useful if analyses fail because a filesystem is full.
 
 ---
 
 # Command history
 
-Every command you run is saved.
+Linux remembers every command you run.
 
-Display previous commands:
+View your command history:
 
 ```bash
 history
@@ -218,17 +344,13 @@ Repeat the previous command:
 !!
 ```
 
-You can also press the **Up Arrow** to cycle through recently used commands.
-
-> **Tip**
->
-> Using the arrow keys is often faster than typing the same command repeatedly.
+You can also use the **Up Arrow** and **Down Arrow** keys to cycle through recent commands.
 
 ---
 
 # Getting help
 
-If you're unsure how a command works, Linux provides built-in documentation.
+Most Linux commands include built-in documentation.
 
 ```bash
 man ls
@@ -244,18 +366,18 @@ Most bioinformatics software also supports the `--help` option.
 
 ---
 
-# Keyboard shortcuts
-
-These shortcuts are worth learning early.
+# Useful keyboard shortcuts
 
 | Shortcut | Function |
 |-----------|----------|
+| Tab | Auto-complete filenames and directories |
 | Ctrl + C | Stop the current command |
 | Ctrl + L | Clear the terminal |
-| Tab | Auto-complete filenames |
-| Up Arrow | Previous command |
+| Up / Down Arrow | Browse command history |
 | Ctrl + R | Search command history |
-| Ctrl + A | Cursor to beginning of the line |
-| Ctrl + R | Cursor to end of the line |
+| Ctrl + A | Move cursor to the beginning of the line |
+| Ctrl + E | Move cursor to the end of the line |
+| Ctrl + U | Delete everything before the cursor |
+| Ctrl + K | Delete everything after the cursor |
 
-Learning just these shortcuts can save a surprising amount of time during everyday work.
+Learning just a few of these shortcuts can make working in the terminal much faster.
