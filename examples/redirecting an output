@@ -1,0 +1,1 @@
+hisat2 ... > logs/hisat2.out 2> logs/hisat2.err
