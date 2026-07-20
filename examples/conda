@@ -1,0 +1,7 @@
+conda create -n rnaseq python=3.12
+
+conda activate rnaseq
+
+conda install fastqc
+
+fastqc --version
