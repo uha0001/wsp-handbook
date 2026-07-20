@@ -1,0 +1,13 @@
+Copy FASTQs
+      │
+Run FastQC
+      │
+Inspect reports
+      │
+Run MultiQC
+
+mkdir fastqc
+
+fastqc *.fastq.gz -o fastqc
+
+multiqc fastqc
