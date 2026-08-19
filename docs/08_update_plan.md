@@ -1,3 +1,6 @@
+# step0
+Make sure everyone backed up the data.
+
 # step1
 Test which Ubuntu version we can go up to starting with 26.04 and going down if needed until all works.
 After the version is determined, the update can begin. 
@@ -24,7 +27,7 @@ diff pre-upgrade_manual-packages.txt post-upgrade_manual-packages.txt
 ```
 
 # step3
-Install slurm - here is a guide: https://slurm.schedmd.com/quickstart_admin.html#quick_start
+Install slurm according to the guide: https://slurm.schedmd.com/quickstart_admin.html#quick_start
 
 # step4
 Install all requested packages if they are not installed already
