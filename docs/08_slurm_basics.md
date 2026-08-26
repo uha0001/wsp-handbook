@@ -320,7 +320,7 @@ The exact path depends on the user's Conda installation.
 
 See:
 
-[Conda and Environments](05_conda_and_environments.md)
+[Conda and Environments](https://github.com/uha0001/wsp-handbook/blob/main/docs/05_conda_and_environments)
 
 ---
 
