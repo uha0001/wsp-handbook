@@ -43,7 +43,7 @@ A typical workflow is:
 
 # Your first job
 
-Create a file called:
+## Create a file called:
 
 ```text
 hello.sh
@@ -63,7 +63,7 @@ echo "Hello from WSP"
 
 ---
 
-Submit it:
+## Submit it:
 
 sbatch hello.sh
 
@@ -72,7 +72,7 @@ SLURM will return a job ID:
 Submitted batch job 12345
 
 
-# Checking your jobs
+## Checking your jobs
 
 Show your jobs:
 
@@ -81,7 +81,8 @@ squeue -u $USER
 Show all jobs:
 
 squeue
-Cancelling a job
+
+## Cancelling a job
 scancel JOB_ID
 
 For example:
@@ -119,7 +120,7 @@ Two days:
 
 Jobs that exceed their requested time may be terminated by SLURM.
 
-Output and error files
+## Output and error files
 
 Use:
 
