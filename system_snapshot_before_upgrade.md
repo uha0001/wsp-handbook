@@ -210,14 +210,22 @@ Additional configuration files:
 Before major system changes:
 
 - [ ] Record operating system version
+Distributor ID:	Ubuntu
+Description:	Ubuntu 16.04.7 LTS
+Release:	16.04
+Codename:	xenial
 - [ ] Record kernel version
+4.15.0-142-generic
 - [ ] Record hardware configuration
 - [ ] Record installed software versions
+done (hopefully)
 - [ ] Export Conda environments
 - [ ] Save important configuration files
 - [ ] Generate installed package list
+done
 - [ ] Confirm backup availability
 - [ ] Inform users of planned maintenance
+done
 
 ---
 
