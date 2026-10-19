@@ -216,6 +216,7 @@ Before major system changes:
 - [x] Record installed software versions - done (hopefully)
 - [ ] Export Conda environments
 - [ ] Save important configuration files - done for the ones that don't need root rights
+  - [ ] may be run this command with the root rights: ```tar -czpf ~/etc-backup-$(date +%F).tar.gz /etc 2>~/etc-backup-errors.txt```  
 - [x] Generate installed package list - done
 - [ ] Confirm backup availability
 - [x] Inform users of planned maintenance - done
