@@ -215,7 +215,7 @@ Before major system changes:
 - [ ] Record hardware configuration
 - [x] Record installed software versions - done (hopefully)
 - [ ] Export Conda environments
-- [ ] Save important configuration files
+- [ ] Save important configuration files - done for the ones that don't need root rights
 - [x] Generate installed package list - done
 - [ ] Confirm backup availability
 - [x] Inform users of planned maintenance - done
