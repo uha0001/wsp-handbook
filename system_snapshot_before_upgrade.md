@@ -212,7 +212,7 @@ Before major system changes:
 - [x] Record operating system version
   - [x] Distributor ID:	Ubuntu , Description:	Ubuntu 16.04.7 LTS , Release:	16.04 , Codename:	xenial
 - [x] Record kernel version - 4.15.0-142-generic
-- [ ] Record hardware configuration
+- [x] Record hardware configuration - done
 - [x] Record installed software versions - done (hopefully)
 - [ ] Export Conda environments
 - [ ] Save important configuration files - done for the ones that don't need root rights
