@@ -214,11 +214,10 @@ Before major system changes:
 - [x] Record kernel version - 4.15.0-142-generic
 - [x] Record hardware configuration - done
 - [x] Record installed software versions - done (hopefully)
-- [ ] Export Conda environments
 - [ ] Save important configuration files - done for the ones that don't need root rights
   - [ ] may be run this command with the root rights: ```sudo tar -czpf ~/etc-backup-$(date +%F).tar.gz /etc 2>~/etc-backup-errors.txt```  
 - [x] Generate installed package list - done
-- [ ] Confirm backup availability
+- [X] Confirm backup availability
 - [x] Inform users of planned maintenance - done
 
 ---
