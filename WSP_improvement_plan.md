@@ -38,12 +38,12 @@ Requests may include:
 
 ## Before Upgrade Checklist
 
-- [ ] Document current system configuration
-- [ ] Record installed software versions
+- [x] Document current system configuration
+- [x] Record installed software versions
 - [ ] Export important Conda environments
-- [ ] Confirm backup availability
-- [ ] Inform users about planned maintenance
-- [ ] Schedule downtime if required
+- [x] Confirm backup availability
+- [x] Inform users about planned maintenance
+- [x] Schedule downtime if required
 
 ## After Upgrade Checklist
 
