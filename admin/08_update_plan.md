@@ -24,6 +24,14 @@ Check of any old software is missing. Install all missing software.
 lsb_release -a
 apt-mark showmanual > post-upgrade_manual-packages.txt
 diff pre-upgrade_manual-packages.txt post-upgrade_manual-packages.txt
+comm -23 <(sort pre-upgrade_manual-packages.txt) <(sort post-upgrade_manual-packages.txt) > missing-packages.txt
+
+for p in $(cat missing-packages.txt); do
+  apt-cache show "$p" >/dev/null 2>&1 && echo "$p"
+done > installable.txt
+
+sudo apt install $(cat installable.txt)
+comm -23 <(sort missing-packages.txt) <(sort installable.txt)
 ```
 
 # step3
