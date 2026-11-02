@@ -1,30 +1,36 @@
 # Conda and Software Environments
 
-Many bioinformatics tools have complex dependencies and often require different versions of the same libraries. Installing everything into one location can quickly lead to software conflicts.
+Many bioinformatics tools have complex dependencies and require specific versions of Python, libraries, or other programs.
 
-Conda solves this problem by allowing you to create isolated **environments**, each containing its own software and dependencies.
+Installing everything into one environment can lead to software conflicts.
 
-For example, one project might require Python 3.10 while another requires Python 3.12. Instead of choosing one or the other, you can create separate environments for each project.
+On WSP, scientific software can be accessed in two main ways:
+
+- **Lmod modules:** Centrally installed software available to WSP users.
+- **Conda environments:** Separate software environments created and maintained by individual users.
+
+Whenever possible, check whether a program is already available through Lmod before creating a new Conda environment.
+
+Conda is particularly useful when a project requires software or dependencies that are not provided by the existing WSP modules.
 
 ---
 
-# What is an environment?
+# 1. What is a Conda environment?
 
-A Conda environment is an isolated workspace containing its own software and libraries.
+A Conda environment is an isolated collection of software packages and their dependencies.
 
 For example:
 
 ```text
 base
-├── Python 3.12
 ├── Conda
 └── Basic utilities
 
 rnaseq
+├── Python 3.12
 ├── FastQC
 ├── fastp
-├── HISAT2
-└── featureCounts
+└── HISAT2
 
 phylogeny
 ├── IQ-TREE
@@ -32,43 +38,102 @@ phylogeny
 └── trimAl
 ```
 
-Each environment is independent, so installing or updating software in one environment will not affect the others.
+Each environment can contain different software versions.
+
+For example, one project may require Python 3.10 while another requires Python 3.12.
+
+Rather than modifying the system Python installation, users can create separate environments for each project.
+
+Changes to one Conda environment generally do not affect other environments.
 
 ---
 
-# Check whether Conda is available
+# 2. Lmod or Conda?
 
-Before creating an environment, verify that Conda is installed.
+WSP uses Lmod to provide centrally installed scientific software.
+
+Before creating a Conda environment, check whether the required software is already available.
+
+```bash
+module avail
+```
+
+Search for a particular program:
+
+```bash
+module spider samtools
+```
+
+Load an available version:
+
+```bash
+module load samtools/1.25
+```
+
+Verify the version:
+
+```bash
+samtools --version
+```
+
+## When should I use each method?
+
+| Situation | Recommended approach |
+|---|---|
+| Software already available through Lmod | Use the existing module |
+| A specific version is available through Lmod | Load that version |
+| Software unavailable centrally | Create a Conda environment |
+| A project requires several interdependent packages | Conda or Mamba |
+| A Python project requires isolated packages | Conda or a Python virtual environment |
+| Software is needed by many WSP users | Request a central installation |
+
+Avoid loading conflicting Lmod modules and Conda packages into the same environment.
+
+For example, loading a centrally installed version of Samtools while activating a Conda environment containing another version may lead to unexpected behavior.
+
+Use `command -v` to check which executable is being used.
+
+---
+
+# 3. Check whether Conda is available
+
+Before creating an environment, verify that Conda is installed:
 
 ```bash
 conda --version
 ```
 
-If Conda is available, you'll see something similar to:
+If Conda is available, the command displays its version.
+
+For example:
 
 ```text
 conda 25.5.1
 ```
 
-If the command is not found, refer to the **Installing Software** guide.
+The version shown on WSP may differ.
+
+If Conda is unavailable, consult the [Installing Software](04_installing_software.md) guide or contact the WSP administrators.
+
+Some users may have their own Miniconda or Miniforge installation.
+
+Do not modify another user's Conda installation or shared environments.
 
 ---
 
-# Viewing existing environments
+# 4. Viewing existing environments
 
-To list all available environments:
+List available Conda environments:
 
 ```bash
 conda env list
 ```
 
-or
+Alternatively:
 
 ```bash
 conda info --envs
 ```
-
-The currently active environment is marked with an asterisk (`*`).
 
 Example:
 
@@ -77,156 +142,404 @@ Example:
 
 base        *   /home/username/miniconda3
 rnaseq          /home/username/miniconda3/envs/rnaseq
+phylogeny       /home/username/miniconda3/envs/phylogeny
 ```
+
+The asterisk (`*`) indicates the currently active environment.
+
+The paths depend on the location of your Conda installation.
 
 ---
 
-# Creating a new environment
+# 5. Creating a new environment
 
-Create a new environment called `rnaseq` containing Python 3.12:
+Create an environment named `rnaseq` containing Python 3.12:
 
 ```bash
 conda create -n rnaseq python=3.12
 ```
 
-Conda will display the packages to be installed and ask for confirmation.
+Conda will resolve the dependencies and display the packages to be installed.
 
-Type:
+Confirm the installation when prompted.
 
-```text
-y
-```
+Environment names should be descriptive and related to the project or workflow.
 
-to continue.
+For example:
+
+- `rnaseq`
+- `genome_assembly`
+- `phylogeny`
+- `population_genomics`
+
+Avoid creating many environments with unclear names.
 
 ---
 
-# Activating an environment
+# 6. Activating an environment
 
-Before using software installed in an environment, activate it.
+Activate an existing environment:
 
 ```bash
 conda activate rnaseq
 ```
 
-Your terminal prompt will change:
+Your terminal prompt may change to:
 
 ```text
 (rnaseq) username@WSP:~$
 ```
 
-This indicates that the environment is active.
+This indicates that the `rnaseq` environment is active.
+
+You can check which Python executable is being used:
+
+```bash
+command -v python
+```
+
+Or check the Python version:
+
+```bash
+python --version
+```
+
+The terminal prompt is useful, but checking executable paths is more reliable when troubleshooting.
 
 ---
 
-# Installing software
+# 7. Installing software
 
 Once an environment is active, software can be installed into it.
 
 For example:
 
 ```bash
-conda install fastqc
+conda install -c conda-forge -c bioconda fastqc
 ```
 
-or
+Or:
 
 ```bash
-conda install fastp
+conda install -c conda-forge -c bioconda fastp
 ```
 
-The software will only be available while the environment is active.
+Verify the installation:
+
+```bash
+fastqc --version
+```
+
+Packages installed into a Conda environment are generally accessible when that environment is active.
+
+Avoid installing unrelated programs into the same environment unnecessarily.
 
 ---
 
-# Installing from Bioconda
+# 8. Installing from Bioconda
 
-Many bioinformatics programs are distributed through the **Bioconda** channel.
+[Bioconda](https://bioconda.github.io/) provides a large collection of bioinformatics software packages.
 
-For example:
+Many tools used in genomics, transcriptomics, and phylogenetics are available through Bioconda.
 
-```bash
-conda install -c bioconda hisat2
-```
-
-or
+For example, install HISAT2:
 
 ```bash
-conda install -c bioconda samtools
+conda install --override-channels -c conda-forge -c bioconda hisat2
 ```
 
-Bioconda contains thousands of life science packages and is usually the first place to look for bioinformatics software.
+Or install MAFFT:
+
+```bash
+conda install --override-channels -c conda-forge -c bioconda mafft
+```
+
+The recommended channel priority is:
+
+1. `conda-forge`
+2. `bioconda`
+
+Using consistent channels helps reduce dependency conflicts.
+
+For new environments, you can specify the packages during creation:
+
+```bash
+conda create -n rnaseq --override-channels -c conda-forge -c bioconda python=3.12 fastqc fastp hisat2
+```
+
+This creates the environment and installs the requested packages together.
 
 ---
 
-# Deactivating an environment
+# 9. Using Mamba
 
-When you're finished working, deactivate the environment:
+Mamba is an alternative package manager compatible with Conda environments.
+
+It can be useful for resolving complex dependency combinations.
+
+If Mamba is installed:
+
+```bash
+mamba --version
+```
+
+Create an environment:
+
+```bash
+mamba create -n phylogeny -c conda-forge -c bioconda iqtree mafft trimal
+```
+
+Activate it using Conda:
+
+```bash
+conda activate phylogeny
+```
+
+Mamba and Conda can generally manage the same environments.
+
+Users do not need to install Mamba if Conda already meets their requirements.
+
+---
+
+# 10. Deactivating an environment
+
+When finished:
 
 ```bash
 conda deactivate
 ```
 
-You'll return to the base environment.
+This removes the active environment from the shell.
 
----
+If the base environment was active previously, deactivation may return you to base.
 
-# Removing an environment
-
-If you no longer need an environment, it can be removed.
+To see which environment is currently active:
 
 ```bash
-conda remove --name rnaseq --all
+conda info --envs
 ```
-
-This deletes the environment and all software installed within it.
 
 ---
 
-# Updating software
+# 11. Updating software
 
-Update a package:
+Update a package within the active environment:
 
 ```bash
 conda update fastqc
 ```
 
-Update every package in the active environment:
+Update all packages:
 
 ```bash
 conda update --all
 ```
 
-Updating an entire environment should be done with care, as newer package versions may change your results or introduce incompatibilities.
+**Be cautious when updating environments used for ongoing or published research.**
+
+Updates may change software versions, dependencies, or analytical results.
+
+For reproducible workflows, consider creating a new environment rather than modifying an established one.
 
 ---
 
-# Exporting environments
+# 12. Removing an environment
 
-To make analyses reproducible, export the environment specification:
+If an environment is no longer needed, it can be removed:
 
 ```bash
-conda env export > environment.yml
+conda remove --name rnaseq --all
 ```
 
-Another user can recreate the same environment with:
+This removes the environment and its installed packages.
+
+Make sure the environment is no longer needed before deleting it.
+
+Do not remove environments belonging to other users.
+
+---
+
+# 13. Exporting environments
+
+Recording software versions is important for reproducibility.
+
+Export an environment:
+
+```bash
+conda env export -n rnaseq > environment.yml
+```
+
+The resulting YAML file describes the environment and its dependencies.
+
+Another user can recreate the environment:
 
 ```bash
 conda env create -f environment.yml
 ```
 
-This helps ensure analyses can be reproduced on another computer or at a later date.
+However, a full environment export may contain platform-specific dependencies or a local installation prefix.
+
+For a more portable specification of explicitly requested packages, use:
+
+```bash
+conda env export -n rnaseq --from-history > environment.yml
+```
+
+The history-based export may not capture every dependency or package installed through pip.
+
+For important analyses, record the exact software versions alongside the environment specification.
+
+---
+
+# 14. Running Conda environments through SLURM
+
+Computationally intensive analyses should be submitted through SLURM rather than run directly in interactive SSH sessions.
+
+Conda environments must be initialized correctly inside SLURM job scripts.
+
+For example:
+
+```bash
+#!/bin/bash
+
+#SBATCH --job-name=rnaseq_example
+#SBATCH --partition=main
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=16G
+#SBATCH --time=04:00:00
+#SBATCH --output=%x_%j.out
+#SBATCH --error=%x_%j.err
+
+source "$HOME/miniconda3/etc/profile.d/conda.sh"
+
+conda activate rnaseq
+
+fastp --version
+```
+
+Replace the Conda initialization path with the location of your own installation.
+
+Submit the script:
+
+```bash
+sbatch job.sh
+```
+
+For reproducibility, use a clearly defined environment and record the package versions.
+
+If your workflow uses centrally installed software instead, load the appropriate Lmod module inside the SLURM script.
+
+---
+
+# 15. Keeping environments organized
+
+Conda environments can occupy substantial storage space, especially when they contain many scientific packages.
+
+Users should:
+
+- Keep permanent environments outside `/scratch`.
+- Avoid installing duplicate copies of large software packages.
+- Remove environments that are no longer needed.
+- Avoid creating unnecessary environments for individual commands.
+- Keep environment configuration files with their projects.
+- Monitor the storage used by their personal software installations.
+
+List environments periodically:
+
+```bash
+conda env list
+```
+
+Clean unused downloaded package archives and caches when appropriate:
+
+```bash
+conda clean --tarballs --packages
+```
+
+Review the proposed removals before confirming.
+
+---
+
+# 16. Troubleshooting
+
+## Conda command not found
+
+Check whether Conda is available:
+
+```bash
+command -v conda
+```
+
+If Conda is installed but not initialized in your shell, you may need to initialize it using the installation's shell configuration.
+
+Consult the Installing Software guide or contact a WSP administrator if you are unsure.
+
+## Conda activate does not work
+
+Conda may not be initialized in the current shell.
+
+For a personal Miniconda installation, you can initialize it with:
+
+```bash
+source "$HOME/miniconda3/etc/profile.d/conda.sh"
+```
+
+Adjust the path if necessary.
+
+## The wrong software version is running
+
+Check the executable:
+
+```bash
+command -v PROGRAM
+```
+
+Check the active Conda environment:
+
+```bash
+conda info --envs
+```
+
+Check loaded Lmod modules:
+
+```bash
+module list
+```
+
+If a Conda environment and an Lmod module provide the same software, the executable selected depends on the shell environment and PATH order.
+
+Avoid mixing conflicting installations.
+
+## Software works interactively but fails in SLURM
+
+Check that the job script initializes Conda and activates the required environment.
+
+Do not assume that an environment activated in your interactive terminal will automatically be available in every batch job.
+
+## Dependency conflicts
+
+If Conda cannot resolve dependencies:
+
+- Check whether the requested package versions are compatible.
+- Use consistent Conda channels.
+- Consider creating a fresh environment.
+- Avoid installing large numbers of unrelated programs together.
+- Check whether the required software is already available through Lmod.
 
 ---
 
 # Good practices
 
-- Create separate environments for different projects or workflows.
-- Give environments descriptive names such as `rnaseq`, `assembly`, or `phylogeny`.
-- Avoid installing large numbers of unrelated programs into the same environment.
-- Export important environments so they can be recreated later.
-- Record the environment used for published analyses.
+- Check Lmod modules before installing personal software.
+- Use separate Conda environments for different workflows.
+- Prefer consistent channels, particularly Conda-forge and Bioconda.
+- Avoid installing research packages into the base environment.
+- Give environments meaningful names.
+- Record package versions used in analyses.
+- Export important environments for reproducibility.
+- Avoid unnecessary updates to established analysis environments.
+- Keep permanent environments outside scratch storage.
+- Activate the required environment explicitly inside SLURM job scripts.
+- Avoid mixing conflicting Conda packages and Lmod modules.
 
-> **Tip**
->
-> If you're unsure which environment you're using, look at your terminal prompt. The active environment is shown in parentheses before your username.
+Conda provides flexibility for project-specific software, while Lmod makes centrally installed tools accessible to all WSP users. Using both appropriately helps keep analyses reproducible and WSP organized.
