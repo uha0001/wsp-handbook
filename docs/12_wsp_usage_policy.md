@@ -1,149 +1,185 @@
 # WSP Usage Policy
 
-> **Status: Draft**
+> **Status: Operational guidelines**
 >
-> This document describes proposed ground rules for using WSP as a shared
-> computational resource.
+> SLURM is installed and operational on WSP. The computational resource limits below reflect the configuration established during the WSP update.
 >
-> Specific numerical limits may change after SLURM installation and testing.
+> Storage management, backup procedures, and some administrative policies are still being developed. These sections will be updated as decisions are finalized.
 
 ---
 
 ## Purpose
 
-WSP is a shared computational resource.
+WSP is a shared computational workstation used by multiple researchers.
 
-The goal of this policy is to:
+The purpose of this policy is to:
 
-- provide fair access to computing resources
-- prevent individual projects from monopolizing WSP
-- maintain sufficient storage for active analyses
-- improve reproducibility
-- reduce accidental disruption of other users
-- establish clear expectations for long-running analyses and storage
+- Provide fair access to computational resources.
+- Prevent individual jobs from monopolizing WSP.
+- Maintain sufficient storage for active research.
+- Improve reproducibility.
+- Reduce accidental disruption of other users.
+- Establish clear expectations for computational analyses, software, and data management.
+
+The goal is not to restrict legitimate research, but to ensure that WSP remains available and reliable for everyone.
 
 ---
 
 # 1. Computationally Intensive Jobs
 
-Large or long-running analyses should be submitted through SLURM.
+**Computationally intensive analyses should be submitted through SLURM.**
 
-Users should avoid running computationally intensive analyses directly in
-interactive SSH sessions.
+SLURM manages resource allocation and schedules jobs according to available CPUs, memory, and configured limits.
 
-Examples include:
+Examples of analyses that should normally use SLURM include:
 
-- read alignment
-- genome assembly
-- population-genomic analyses
-- large RNA-seq analyses
-- large R or Python workflows
-- jobs requiring many CPU cores
-- jobs requiring substantial memory
+- Read alignment and mapping.
+- Genome assembly.
+- Population-genomic analyses.
+- Large RNA-seq analyses.
+- Computationally intensive R or Python workflows.
+- Analyses requiring multiple CPU cores.
+- Memory-intensive analyses.
+- Long-running computational pipelines.
+
+Small commands, file inspection, script editing, and other lightweight tasks may be performed directly in interactive terminals.
+
+Users should avoid running large analyses directly through SSH or desktop terminals.
+
+> **Important:** SLURM limits apply to jobs submitted through SLURM. They do not automatically restrict computational processes launched outside the scheduler.
+
+See [SLURM Basics](09_slurm_basics.md).
 
 ---
 
 # 2. Resource Requests
 
-Users should request only the resources required by their analysis.
+Users should request only the resources necessary for their analyses.
 
 This includes:
 
-- CPU cores
-- memory
-- wall time
+- CPU cores.
+- Memory.
+- Wall time.
 
-Requesting substantially more resources than required reduces availability for
-other WSP users.
+Requesting substantially more resources than necessary reduces availability for other researchers.
 
-WSP-specific maximum limits will be documented after SLURM configuration.
+For example, requesting 32 CPUs for a program that uses only four threads unnecessarily reserves extra resources.
+
+Where supported, software thread counts should match the allocated CPUs.
+
+```bash
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=16G
+#SBATCH --time=04:00:00
+```
+
+Users should monitor completed jobs and adjust future resource requests based on actual requirements.
 
 ---
 
-# 3. Fair Resource Allocation
+# 3. WSP Resource Limits
 
-No single user or project should continuously occupy the majority of WSP's
-computational resources.
+WSP uses the `main` SLURM partition.
 
-SLURM will be configured to distribute resources between users and projects in
-a fair manner.
+The `wsp_limits` Quality of Service (QOS) sets resource limits for shared computing.
 
-Possible mechanisms include:
+| Resource | Configured limit |
+|---|---|
+| Maximum CPUs per job | 48 |
+| Maximum memory per job | 250 GB |
+| Maximum CPUs per user | 64 |
+| Maximum memory per user | 300 GB |
+| Maximum running jobs per user | 10 |
+| Maximum submitted jobs per user | 100 |
+| Maximum job duration | 30 days |
+| Default job duration | 48 hours |
 
-- maximum CPU allocation per job
-- maximum simultaneous CPU allocation per user
-- memory limits
-- fair-share scheduling
-- maximum job duration
-- queueing when resources are unavailable
+These limits are intended to prevent individual users from consuming an excessive proportion of WSP's available resources.
 
-Final limits are:
+Multiple jobs may run simultaneously as long as the relevant limits and available resources permit.
 
-```text
-TBD
-```
+Jobs that cannot start immediately will remain pending until they can be scheduled.
+
+> **Administrative note:** These are the limits established during configuration. Administrators should verify the current QOS assignments and limits before treating this table as the definitive live configuration.
 
 ---
 
 # 4. Maximum Job Duration
 
-Very long jobs can prevent other users from accessing WSP resources.
+The configured maximum wall time for jobs under `wsp_limits` is **30 days**.
 
-A maximum wall time will therefore be defined for normal jobs.
+The default job duration is 48 hours when no other time limit is specified.
 
-Proposed range:
+Users should request realistic runtimes rather than automatically selecting the maximum.
 
-```text
-1–2 weeks maximum
+Examples:
+
+```bash
+#SBATCH --time=12:00:00
 ```
 
-The final limit will be determined after SLURM testing.
+For a 12-hour job.
 
-Jobs requiring longer runtimes should be discussed in advance.
+```bash
+#SBATCH --time=7-00:00:00
+```
+
+For a seven-day job.
+
+Jobs exceeding their wall-time allocation may be terminated by SLURM.
+
+Discuss analyses requiring more than the configured maximum with WSP administrators in advance.
 
 ---
 
 # 5. Large Jobs and Exceptions
 
-Some analyses may legitimately require more resources than the normal limits.
+Some analyses may legitimately require unusually large allocations.
 
-Examples may include:
+Examples include:
 
-- large genome assemblies
-- unusually large population-genomic datasets
-- memory-intensive analyses
-- analyses with unusually long runtimes
+- Large genome assemblies.
+- Population-genomic analyses involving extensive datasets.
+- Memory-intensive workflows.
+- Analyses requiring exceptionally long runtimes.
+- Large-scale computational pipelines.
 
-Users should discuss these cases in advance so that appropriate resources can
-be allocated without unnecessarily disrupting other projects.
+Users should discuss these requirements with WSP administrators before exceeding normal limits.
+
+Exceptions should evaluate exceptions based on available resources, other users' workloads, and the scientific requirements of the analysis.
+
+Users should not attempt to bypass SLURM limits by running large analyses directly outside the scheduler.
 
 ---
 
 # 6. Scratch Storage
 
-`/scratch` is active working storage.
+`/scratch` is active computational working storage.
 
 It is intended for:
 
-- active computational projects
-- large working datasets
-- intermediate files
-- temporary analysis outputs
+- Active research projects.
+- Large working datasets.
+- Intermediate analysis files.
+- Temporary computational outputs.
+- Data required for ongoing analyses.
 
-It is not intended as permanent archival storage.
+**Scratch is not intended to serve as permanent archival storage.**
 
----
+Users remain responsible for managing their project data.
 
-## Scratch Expectations
+## Scratch expectations
 
 Users should:
 
-- remove unnecessary intermediate files
-- avoid unnecessary duplicate datasets
-- archive completed projects
-- monitor project size
-- clean inactive project directories
-- ensure important data are backed up elsewhere
+- Remove unnecessary intermediate files.
+- Avoid duplicate copies of large datasets.
+- Archive completed projects when appropriate.
+- Monitor project directory sizes.
+- Review inactive project directories.
+- Keep important data backed up elsewhere.
+- Avoid filling shared storage with temporary files that are no longer needed.
 
 Check available scratch space:
 
@@ -151,49 +187,43 @@ Check available scratch space:
 df -h /scratch
 ```
 
-Check project size:
+Check the size of a project directory:
 
 ```bash
 du -sh /scratch/USERNAME/PROJECT
 ```
 
----
+Replace `USERNAME` and `PROJECT` with the appropriate directory names.
 
-## Scratch Usage Target
+## Scratch utilization target
 
-A target maximum total `/scratch` utilization may be introduced to preserve
-sufficient working space for active analyses.
+We have not yet finalized a formal utilization target.
 
-Proposed target:
+We have discussed a possible overall storage threshold, but do not treat any percentage as established policy until it is approved and communicated.
 
-```text
-TBD
-```
-
-A strict 50% limit has been discussed but should only be implemented if it is
-compatible with actual project requirements.
+Users should still avoid unnecessary storage use and report when scratch space is becoming critically low.
 
 ---
 
 # 7. Old and Inactive Data
 
-Files belonging to completed or inactive projects should be reviewed and
-archived where appropriate.
+Review files belonging to completed or inactive projects periodically.
 
-Automated deletion should not be introduced without:
+Where appropriate, transfer completed datasets to suitable archival or backup storage.
 
-- clear notification
-- defined retention rules
-- sufficient time for users to retrieve or archive data
+Users should not assume that scratch data will remain available indefinitely.
 
-Possible future rules may include review of files that have not been modified
-for a defined period.
+However, **automatic deletion or a fixed retention period has not been established as part of this policy**.
 
-Retention period:
+Any future cleanup procedure should include:
 
-```text
-TBD
-```
+- Clear notification to affected users.
+- Defined retention criteria.
+- Reasonable time to retrieve or archive data.
+- Consideration of ongoing research requirements.
+- Appropriate administrative oversight.
+
+Users should not delete or modify another researcher's project data without authorization.
 
 ---
 
@@ -201,158 +231,227 @@ TBD
 
 External drives may be used for transferring large datasets to or from WSP.
 
-At least one USB 3 connection should remain available for data transfer whenever
-possible.
+Where possible, keep at least one suitable high-speed USB connection accessible for data transfers.
 
-Users should disconnect external drives after transfers are complete unless the
-drive is actively required.
+Users should:
 
-External drives should not become permanent extensions of WSP storage without a
-specific reason.
+- Disconnect external drives safely after transfers.
+- Avoid leaving drives connected unnecessarily.
+- Ensure important data exists elsewhere before deleting originals.
+- Coordinate unusually large transfers when necessary.
+- Avoid treating external drives as permanent extensions of WSP storage without approval.
 
----
-
-# 9. Software
-
-Software may be provided through:
-
-- system-wide installation
-- environment modules
-- Conda environments
-- user-specific environments
-
-Users should avoid modifying shared software installations unless they are
-responsible for WSP administration.
+External storage devices should not interfere with other users' access to the workstation.
 
 ---
 
-## Software Requests
+# 9. Software and Lmod Modules
+
+WSP provides centrally installed scientific software, including programs managed through **Lmod environment modules**.
+
+Users should check whether the required software is already available before installing another copy.
+
+List available modules:
+
+```bash
+module avail
+```
+
+Search for software:
+
+```bash
+module spider samtools
+```
+
+Load a specific version:
+
+```bash
+module load samtools/1.25
+```
+
+Users should prefer centrally maintained software where appropriate.
+
+Personal software installations are permitted when the required software or version is not available centrally.
+
+Users must not modify shared software installations, system directories, or modulefiles without authorization.
+
+## Software requests
 
 Requests for new or updated software should include:
 
-- software name
-- required version
-- official website or repository
-- purpose
-- project using the software
-- expected users
-- dependencies, if known
+- Software name.
+- Required version.
+- Official website or repository.
+- Scientific purpose.
+- Project requiring the software.
+- Expected users.
+- Known dependencies, where relevant.
 
-Software required by multiple users should preferably be installed and
-documented centrally where practical.
+Software useful to multiple researchers should preferably be installed and documented centrally when practical.
+
+See [Installing Software](04_installing_software.md).
 
 ---
 
 # 10. Conda and User Environments
 
-Personal Conda environments are allowed when required.
+Personal Conda environments, Python virtual environments, and other user-specific software installations are permitted.
 
 Users should:
 
-- keep environment names meaningful
-- remove environments that are no longer needed
-- document important environments used for research
-- export environments when reproducibility is important
+- Use meaningful environment names.
+- Avoid unnecessary duplicate installations.
+- Remove environments that are no longer needed.
+- Document important software versions.
+- Keep permanent environments outside scratch storage.
+- Avoid modifying shared environments without authorization.
 
-Example:
+For reproducibility, Conda environments can be exported:
 
 ```bash
 conda env export > environment.yml
 ```
 
+Users should be aware that activating Conda environments and loading Lmod modules can affect software paths and dependencies.
+
+When possible, use a consistent software environment for each analysis.
+
 ---
 
 # 11. Monitoring Jobs
 
-Users are responsible for monitoring their submitted jobs.
+Users are responsible for monitoring their submitted SLURM jobs.
 
 This includes:
 
-- checking whether jobs start correctly
-- reviewing output and error files
-- monitoring storage use
-- checking whether resource requests are appropriate
-- cancelling jobs that are no longer needed
+- Checking whether jobs start successfully.
+- Reviewing output and error files.
+- Monitoring resource consumption.
+- Checking that CPU and memory requests are appropriate.
+- Cancelling unnecessary jobs.
+- Investigating unexpected failures.
 
-See:
+View your jobs:
 
-[Monitoring SLURM Jobs](10_monitoring_jobs.md)
+```bash
+squeue -u $USER
+```
+
+View job accounting information:
+
+```bash
+sacct -u $USER --starttime today
+```
+
+Cancel a job:
+
+```bash
+scancel JOB_ID
+```
+
+See [Monitoring SLURM Jobs](10_monitoring_jobs.md).
 
 ---
 
 # 12. Failed Jobs
 
-Repeatedly resubmitting a failing job without investigating the cause should be
-avoided.
+Avoid repeatedly resubmitting a failing job without investigating the cause.
 
 Before resubmitting:
 
-- inspect the error
-- check resource usage
-- check input files
-- check software environment
-- check available storage
+- Inspect the error messages.
+- Check SLURM job status and exit codes.
+- Review memory and runtime requirements.
+- Verify input files and paths.
+- Confirm that the correct software environment is loaded.
+- Check available scratch space.
+- Correct the underlying problem where possible.
 
-See:
+Users should not repeatedly submit jobs that are known to exceed the configured resource limits.
 
-[Troubleshooting WSP](11_troubleshooting.md)
+See [Troubleshooting WSP](11_troubleshooting.md).
 
 ---
 
 # 13. Maintenance Windows
 
-Major system updates or maintenance may require temporary WSP downtime.
+Major software updates, operating system maintenance, or SLURM configuration changes may require temporary WSP downtime.
 
-Users will be notified before planned maintenance whenever possible.
+We will notify users before planned maintenance whenever possible.
 
-Before a major update:
+Before major maintenance, users should:
 
-- users should complete or stop active jobs
-- important data should be backed up
-- external drives should be disconnected
-- required software and environments should be documented
+- Complete or safely stop active analyses where requested.
+- Back up important research data.
+- Disconnect external drives when appropriate.
+- Document important software environments.
+- Avoid starting long-running jobs that may overlap with the maintenance period.
+
+Unplanned maintenance may occasionally be necessary to address urgent technical problems.
 
 ---
 
-# 14. Backups
+# 14. Backups and Data Responsibility
 
-Users should not assume that files stored on WSP are automatically protected
-against every form of data loss.
+Users should not assume that all files stored on WSP are automatically protected against data loss.
 
-Important research data should exist in an appropriate backup or archival
-location.
+Back up important research data to an appropriate independent location.
 
-The official WSP backup procedure will be documented separately.
+This is particularly important for:
+
+- Raw sequencing data.
+- Irreplaceable experimental datasets.
+- Analysis scripts.
+- Processed results.
+- Reference files that cannot easily be reconstructed.
+- Project documentation.
+
+A separate WSP backup and recovery procedure should define which directories are backed up, how frequently backups occur, and how restoration requests are handled.
+
+Until such a procedure is documented, users should not rely on WSP as the only location for important data.
 
 ---
 
 # 15. Good Shared-Resource Practice
 
-Users should:
+All WSP users are expected to:
 
-- request only necessary resources
-- avoid unnecessary duplicate data
-- remove abandoned temporary files
-- monitor long-running jobs
-- communicate unusually large resource requirements
-- report problems with sufficient technical information
-- avoid system-wide changes without authorization
+- Submit computationally intensive analyses through SLURM.
+- Request realistic CPU, memory, and runtime allocations.
+- Respect configured resource limits.
+- Monitor and manage their jobs.
+- Avoid unnecessary duplication of large datasets.
+- Remove abandoned temporary files.
+- Use centrally installed software where practical.
+- Document software versions and computational workflows.
+- Communicate unusually large resource requirements.
+- Report technical problems with sufficient information for troubleshooting.
+- Avoid unauthorized changes to system-wide configurations.
+- Respect other researchers' data and working directories.
 
-The goal is not to restrict legitimate analyses, but to ensure that WSP remains
-usable for all researchers.
+WSP is a shared research resource. Responsible usage helps ensure that everyone can carry out their analyses efficiently.
 
 ---
 
-# Final Limits
+# Current Policy Summary
 
-The following values will be filled in after SLURM installation and testing:
-
-| Policy | Limit |
+| Policy | Current status |
 |---|---|
-| Maximum CPUs per job | TBD |
-| Maximum CPUs per user | TBD |
-| Maximum memory per job | TBD |
-| Maximum normal job duration | TBD |
-| Scratch utilization target | TBD |
-| Inactive-file review period | TBD |
-| Large-job exception procedure | TBD |
+| Computationally intensive jobs | Submit through SLURM |
+| SLURM partition | `main` |
+| Maximum CPUs per job | 48 |
+| Maximum CPUs per user | 64 |
+| Maximum memory per job | 250 GB |
+| Maximum memory per user | 300 GB |
+| Maximum running jobs per user | 10 |
+| Maximum submitted jobs per user | 100 |
+| Default job duration | 48 hours |
+| Maximum job duration | 30 days |
+| Software management | Lmod and user environments |
+| Scratch utilization target | Not finalized |
+| Inactive-file retention period | Not finalized |
+| Large-job exception procedure | Contact WSP administrators; formal process pending |
+| Automatic scratch deletion | No policy established |
+| Backup and recovery procedure | To be documented |
+
+These guidelines may be revised as WSP usage patterns, computational requirements, and administrative procedures evolve.
